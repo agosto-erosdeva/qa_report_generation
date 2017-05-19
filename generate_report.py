@@ -81,14 +81,14 @@ def main(argv):
     html_report = ""
 
     for line in report_as_array:
-        if 'pass' in line.lower():
-            finalized_report.append({'report_line': line,
-                                     'classification': 'bg-success',
-                                     'display': 'SUCCESS'})
-        elif 'fail' in line.lower():
+        if 'fail' in line.lower():
             finalized_report.append({'report_line': line,
                                      'classification': 'bg-danger',
                                      'display': 'FAIL'})
+        elif 'pass' in line.lower():
+            finalized_report.append({'report_line': line,
+                                     'classification': 'bg-success',
+                                     'display': 'SUCCESS'})
         else:
             finalized_report.append({'report_line': line,
                                      'classification': 'text-muted',
