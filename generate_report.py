@@ -67,7 +67,7 @@ def main(argv):
     for opt, arg in opts:
         if opt == '-h':
             print '\n Command must meet following format. Your input file must be present inside the root of the project.' \
-                  ' \n > generate_report.py -i <inputfile.txt> -o <outputfile.html> \n'
+                  ' \n > python generate_report.py -i <inputfile.txt> -o <outputfile.html> \n'
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -109,7 +109,7 @@ def main(argv):
     text_file.write(finalized_html)
     text_file.close()
 
-    print '>>> You report has been successfully generated as {}!'.format(outputfile)
+    print '>>> Your report has been successfully generated as {}!'.format(outputfile)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
