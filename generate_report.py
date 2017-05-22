@@ -1,5 +1,8 @@
 import sys
 import getopt
+import os
+import copy
+
 
 html_template = """<!DOCTYPE html>
 <html lang="en">
@@ -26,8 +29,8 @@ html_template = """<!DOCTYPE html>
     </div>
 </nav>
 
-<table cellpadding="0" cellspacing="0" border="0" align="center" width="100%" id="navbar-table">
-            <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
+<table cellpadding="0" cellpadding="20" border="0" align="center" width="90%" id="navbar-table">
+            <table cellspacing="20" cellpadding="0" border="20" align="center" width="100%">
                 <tr style="max-width: 100%;">
 
                 Below you will find the report generation results!
@@ -35,7 +38,7 @@ html_template = """<!DOCTYPE html>
                 <br>
                 <br>
 
-                <table class="table table-condensed table-striped table-hover table-bordered">
+                <table cellspacing="20" class="table table-condensed table-striped table-hover table-bordered">
                             <thead>
                             <tr>
                                 <th class="col-xs-10">Line</th>
@@ -56,11 +59,12 @@ html_template = """<!DOCTYPE html>
 </body>
 </html>"""
 
+
 def main(argv):
     inputfile = ''
     outputfile = ''
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
+        opts, args = getopt.getopt(argv, "ahi:o:", ["ifile=", "ofile="])
     except getopt.GetoptError:
         print 'generate_report.py -i <inputfile> -o <outputfile>'
         sys.exit(2)
@@ -69,11 +73,33 @@ def main(argv):
             print '\n Command must meet following format. Your input file must be present inside the root of the project.' \
                   ' \n > python generate_report.py -i <inputfile.txt> -o <outputfile.html> \n'
             sys.exit()
+        elif opt == '-a':
+            # Contains .txt files
+            txt_list = []
+            for file in os.listdir("."):
+                if file.endswith(".txt"):
+                    txt_list.append(file)
+
+            # Produce Output for Every TXT file
+            for txt_file in txt_list:
+                out_file = txt_file.split('.')[0] + '.html'
+                generate_report(txt_file, out_file, output_dir='html_reports/')
+
+            print '>>> Your reports have been generated. They can be found in the html_reports directory.'
+            return
+
         elif opt in ("-i", "--ifile"):
             inputfile = arg
         elif opt in ("-o", "--ofile"):
             outputfile = arg
 
+    # Generates The Report and Writes it to project directory.
+    generate_report(inputfile, outputfile)
+
+    print '>>> Your report has been successfully generated as {}!'.format(outputfile)
+
+
+def generate_report(inputfile, outputfile, output_dir=None):
     f = open(inputfile, 'r')
     report_as_array = f.readlines()
 
@@ -103,13 +129,21 @@ def main(argv):
 
         html_report += table_row
 
-    finalized_html = html_template.format(html_report)
+    current_html_template = copy.deepcopy(html_template)
+    finalized_html = current_html_template.format(html_report)
 
-    text_file = open(outputfile, "w")
-    text_file.write(finalized_html)
-    text_file.close()
+    if output_dir:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
 
-    print '>>> Your report has been successfully generated as {}!'.format(outputfile)
+        text_file = open((output_dir + outputfile), "w")
+        text_file.write(finalized_html)
+        text_file.close()
+    else:
+        text_file = open(outputfile, "w")
+        text_file.write(finalized_html)
+        text_file.close()
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
